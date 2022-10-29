@@ -15,15 +15,11 @@ namespace Bicode.Controllers
     [ApiController]
     public class PersonaController : ControllerBase
     {
-        private readonly BI_TESTGENContext _context;
-
         private readonly PersonaService _personaService;
 
-        public PersonaController(PersonaService personaService, BI_TESTGENContext context)
+        public PersonaController(PersonaService personaService)
         {
-
             _personaService = personaService;
-            _context = context;
         }
         // GET: api/Persona
         [HttpGet]
@@ -42,52 +38,50 @@ namespace Bicode.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Persona>> GetPersonas(int id)
         {
-            var personas = await _personaService.GetAsyncId(id);
+            var persona = await _personaService.GetAsyncId(id);
 
-            if (personas == null)
+            if (persona == null)
             {
                 return NotFound();
             }
-            return personas;
+            return persona;
+        }
+        // PUT: api/Persona/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPersona(int id, PersonaDto personaDto)
+        {
+
+            if (id != personaDto.Id)
+            {
+                return BadRequest();
+            }
+
+            var personaDb = await _personaService.GetAsyncId(id);
+
+            if (personaDb == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                await _personaService.UpdateAsync(personaDto, personaDb);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return CreatedAtAction(nameof(GetPersonas), new
+            {
+                id = personaDb.Id
+            }, personaDb);
         }
 
-        // // PUT: api/Persona/5
-        // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> PutPersona(int id, Persona persona)
-        // {
-        //     if (id != persona.Id)
-        //     {
-        //         return BadRequest();
-        //     }
-
-        //     _context.Entry(persona).State = EntityState.Modified;
-
-        //     try
-        //     {
-        //         await _context.SaveChangesAsync();
-        //     }
-        //     catch (DbUpdateConcurrencyException)
-        //     {
-        //         if (!PersonaExists(id))
-        //         {
-        //             return NotFound();
-        //         }
-        //         else
-        //         {
-        //             throw;
-        //         }
-        //     }
-
-        //     return NoContent();
-        // }
-
         // POST: api/Persona
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Persona>> PostPersona(PersonaDto personaDto)
         {
-            Console.WriteLine("result1.ToString()");
             var persona = new Persona
             {
                 IdDocumento = personaDto.IdDocumento,
@@ -99,38 +93,27 @@ namespace Bicode.Controllers
                 FechaActualizacion = DateTime.Now,
                 FechaCreacion = DateTime.Now
             };
-            // _context.Personas.Add(persona);
-            // await _context.SaveChangesAsync();
             await _personaService.CreateAsync(persona);
+
             return CreatedAtAction(nameof(GetPersonas), new
             {
                 id = persona.Id
             }, persona);
         }
 
-        // // DELETE: api/Persona/5
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> DeletePersona(int id)
-        // {
-        //     if (_context.Personas == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     var persona = await _context.Personas.FindAsync(id);
-        //     if (persona == null)
-        //     {
-        //         return NotFound();
-        //     }
+        // DELETE: api/Persona/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePersona(int id)
+        {
+            var persona = await _personaService.GetAsyncId(id);
 
-        //     _context.Personas.Remove(persona);
-        //     await _context.SaveChangesAsync();
+            if (persona == null)
+            {
+                return NotFound();
+            }
+            await _personaService.RemoveAsync(persona);
 
-        //     return NoContent();
-        // }
-
-        // private bool PersonaExists(int id)
-        // {
-        //     return (_context.Personas?.Any(e => e.Id == id)).GetValueOrDefault();
-        // }
+            return NoContent();
+        }
     }
 }

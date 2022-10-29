@@ -7,6 +7,7 @@ namespace Bicode.Models.Dto
 {
     public class PersonaDto
     {
+        public int? Id { get; set; }
         public int? IdDocumento { get; set; }
         public int? IdGenero { get; set; }
         public string? Nombre { get; set; }

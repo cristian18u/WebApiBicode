@@ -1,4 +1,5 @@
 using Bicode.Models;
+using Bicode.Models.Dto;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bicode.Services
@@ -12,28 +13,32 @@ namespace Bicode.Services
             _context = context;
         }
 
-        public async Task<List<Persona>> GetAsync() =>
-            await _context.Personas.ToListAsync();
+        public async Task<List<Persona>?> GetAsync()
+        {
+            if (_context.Personas == null) return null;
+            return await _context.Personas.ToListAsync();
+        }
 
-        public async Task<Persona?> GetAsyncId(int id) =>
-            await _context.Personas.FindAsync(id);
-        // public async Task<Persona?> FilterNameAsync(string name) =>
-        //     await _usersCollection.Find(x => x.Name == name).FirstOrDefaultAsync();
+        public async Task<Persona?> GetAsyncId(int id)
+        {
+            if (_context.Personas == null) return null;
+            return await _context.Personas.FindAsync(id);
+        }
         public async Task CreateAsync(Persona newPersona)
-        {  // tengo mis dudas con este  en el return 
-
+        {
             _context.Personas.Add(newPersona);
             await _context.SaveChangesAsync();
         }
 
-        //     _context.Personas.Add(persona);
-        //     await _context.SaveChangesAsync();
-
-        // public async Task UpdateAsync(string id, Persona updatePersona) =>
-        //     await _usersCollection.ReplaceOneAsync(x => x.UserId == id, updatePersona);
-        public async Task UpdateAsync(string id, Persona updatePersona)
+        public async Task UpdateAsync(PersonaDto personaDto, Persona personaDb)
         {
-            _context.Entry(updatePersona).State = EntityState.Modified;
+            if (personaDto.IdDocumento != null) personaDb.IdDocumento = personaDto.IdDocumento;
+            if (personaDto.IdGenero != null) personaDb.IdGenero = personaDto.IdGenero;
+            if (personaDto.Nombre != null) personaDb.Nombre = personaDto.Nombre;
+            if (personaDto.Apellido != null) personaDb.Apellido = personaDto.Apellido;
+            if (personaDto.NumeroDocumento != null) personaDb.NumeroDocumento = personaDto.NumeroDocumento;
+            if (personaDto.FechaNacimiento != null) personaDb.FechaNacimiento = personaDto.FechaNacimiento;
+            personaDb.FechaActualizacion = DateTime.Now;
             await _context.SaveChangesAsync();
         }
 
@@ -42,24 +47,6 @@ namespace Bicode.Services
             _context.Personas.Remove(persona);
             await _context.SaveChangesAsync();
         }
-        // await _usersCollection.DeleteOneAsync(x => x.UserId == id);
-
-
-        //         public async Task<List<User>> GetAsync() =>
-        //     await _usersCollection.Find(_ => true).ToListAsync();
-
-        // public async Task<User?> GetAsync(string id) =>
-        //     await _usersCollection.Find(x => x.UserId == id).FirstOrDefaultAsync();
-        // public async Task<User?> FilterNameAsync(string name) =>
-        //     await _usersCollection.Find(x => x.Name == name).FirstOrDefaultAsync();
-        // public async Task CreateAsync(User newUser) =>
-        //     await _usersCollection.InsertOneAsync(newUser);
-
-        // public async Task UpdateAsync(string id, User updateUser) =>
-        //     await _usersCollection.ReplaceOneAsync(x => x.UserId == id, updateUser);
-
-        // public async Task RemoveAsync(string id) =>
-        //     await _usersCollection.DeleteOneAsync(x => x.UserId == id);
 
     }
 
