@@ -13,16 +13,86 @@ namespace Bicode.Services
             _context = context;
         }
 
-        public async Task<List<Persona>?> GetAsync()
+        public async Task<List<PersonaSelectDto>?> GetAsync()
         {
             if (_context.Personas == null) return null;
-            return await _context.Personas.ToListAsync();
+            return await (from a in (from p in _context.Personas
+                                     join g in _context.Generos on p.IdGenero equals g.Id
+                                     join d in _context.Documentos on p.IdDocumento equals d.Id
+                                     select new PersonaSelectDto
+                                     {
+                                         Id = p.Id,
+                                         Nombre = p.Nombre,
+                                         Apellido = p.Apellido,
+                                         NumeroDocumento = p.NumeroDocumento,
+                                         TipoDeDocumento = d.Abreviatura,
+                                         Genero = g.Nombre,
+                                         FechaNacimiento = p.FechaNacimiento,
+                                         FechaCreacion = p.FechaCreacion,
+                                         FechaActualizacion = p.FechaActualizacion,
+                                         Edad = DateTime.Now.Year - p.FechaNacimiento.Year
+                                     })
+                          select new PersonaSelectDto
+                          {
+                              Id = a.Id,
+                              Nombre = a.Nombre,
+                              Apellido = a.Apellido,
+                              NumeroDocumento = a.NumeroDocumento,
+                              TipoDeDocumento = a.TipoDeDocumento,
+                              Genero = a.Nombre,
+                              FechaNacimiento = a.FechaNacimiento,
+                              FechaCreacion = a.FechaCreacion,
+                              FechaActualizacion = a.FechaActualizacion,
+                              Edad = a.Edad,
+                              Clasificacion = (
+                              a.Edad <= 14 ? "Niño" :
+                              a.Edad >= 15 && a.Edad <= 20 ? "Adolecente" :
+                              a.Edad >= 21 && a.Edad <= 60 ? "Mayor de Edad" :
+                              "Tercera Edad"
+                              )
+                          }).ToListAsync(); ;
         }
 
-        public async Task<Persona?> GetAsyncId(int id)
+        public async Task<PersonaSelectDto?> GetAsyncId(int id)
         {
             if (_context.Personas == null) return null;
-            return await _context.Personas.FindAsync(id);
+            return await (
+                                                from a in (from p in _context.Personas
+                                                           where id == p.Id
+                                                           join g in _context.Generos on p.IdGenero equals g.Id
+                                                           join d in _context.Documentos on p.IdDocumento equals d.Id
+                                                           select new PersonaSelectDto
+                                                           {
+                                                               Id = p.Id,
+                                                               Nombre = p.Nombre,
+                                                               Apellido = p.Apellido,
+                                                               NumeroDocumento = p.NumeroDocumento,
+                                                               TipoDeDocumento = d.Abreviatura,
+                                                               Genero = g.Nombre,
+                                                               FechaNacimiento = p.FechaNacimiento,
+                                                               FechaCreacion = p.FechaCreacion,
+                                                               FechaActualizacion = p.FechaActualizacion,
+                                                               Edad = DateTime.Now.Year - p.FechaNacimiento.Year
+                                                           })
+                                                select new PersonaSelectDto
+                                                {
+                                                    Id = a.Id,
+                                                    Nombre = a.Nombre,
+                                                    Apellido = a.Apellido,
+                                                    NumeroDocumento = a.NumeroDocumento,
+                                                    TipoDeDocumento = a.TipoDeDocumento,
+                                                    Genero = a.Nombre,
+                                                    FechaNacimiento = a.FechaNacimiento,
+                                                    FechaCreacion = a.FechaCreacion,
+                                                    FechaActualizacion = a.FechaActualizacion,
+                                                    Edad = a.Edad,
+                                                    Clasificacion = (
+                                                    a.Edad <= 14 ? "Niño" :
+                                                    a.Edad >= 15 && a.Edad <= 20 ? "Adolecente" :
+                                                    a.Edad >= 21 && a.Edad <= 60 ? "Mayor de Edad" :
+                                                    "Tercera Edad"
+                                                    )
+                                                }).FirstAsync();
         }
         public async Task CreateAsync(Persona newPersona)
         {
@@ -30,14 +100,13 @@ namespace Bicode.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(PersonaDto personaDto, Persona personaDb)
+        public async Task UpdateAsync(PersonaUpdateDto personaUpdateDto, Persona personaDb)
         {
-            if (personaDto.IdDocumento != null) personaDb.IdDocumento = personaDto.IdDocumento;
-            if (personaDto.IdGenero != null) personaDb.IdGenero = personaDto.IdGenero;
-            if (personaDto.Nombre != null) personaDb.Nombre = personaDto.Nombre;
-            if (personaDto.Apellido != null) personaDb.Apellido = personaDto.Apellido;
-            if (personaDto.NumeroDocumento != null) personaDb.NumeroDocumento = personaDto.NumeroDocumento;
-            if (personaDto.FechaNacimiento != null) personaDb.FechaNacimiento = personaDto.FechaNacimiento;
+            if (personaUpdateDto.IdDocumento != null) personaDb.IdDocumento = personaUpdateDto.IdDocumento;
+            if (personaUpdateDto.IdGenero != null) personaDb.IdGenero = personaUpdateDto.IdGenero;
+            if (personaUpdateDto.Nombre != null) personaDb.Nombre = personaUpdateDto.Nombre;
+            if (personaUpdateDto.Apellido != null) personaDb.Apellido = personaUpdateDto.Apellido;
+            if (personaUpdateDto.NumeroDocumento != null) personaDb.NumeroDocumento = personaUpdateDto.NumeroDocumento;
             personaDb.FechaActualizacion = DateTime.Now;
             await _context.SaveChangesAsync();
         }
@@ -48,6 +117,10 @@ namespace Bicode.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<Persona?> GetPersonaAsyncId(int id)
+        {
+            return await _context.Personas.FindAsync(id);
+        }
     }
 
 }
