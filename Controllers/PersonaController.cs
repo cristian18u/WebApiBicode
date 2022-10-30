@@ -85,23 +85,26 @@ namespace Bicode.Controllers
         public async Task<ActionResult<Persona>> PostPersona(PersonaDto personaDto)
         {
             //falta manejo de excepciones
-            var persona = new Persona
-            {
-                IdDocumento = personaDto.IdDocumento,
-                IdGenero = personaDto.IdGenero,
-                Nombre = personaDto.Nombre,
-                Apellido = personaDto.Apellido,
-                NumeroDocumento = personaDto.NumeroDocumento,
-                FechaNacimiento = personaDto.FechaNacimiento,
-                FechaActualizacion = DateTime.Now,
-                FechaCreacion = DateTime.Now
-            };
-            await _personaService.CreateAsync(persona);
+            //falta try catch
 
-            return CreatedAtAction(nameof(GetPersonas), new
-            {
-                id = persona.Id
-            }, persona);
+            // var persona = new Persona
+            // {
+            //     IdDocumento = personaDto.IdDocumento,
+            //     IdGenero = personaDto.IdGenero,
+            //     Nombre = personaDto.Nombre,
+            //     Apellido = personaDto.Apellido,
+            //     NumeroDocumento = personaDto.NumeroDocumento,
+            //     FechaNacimiento = personaDto.FechaNacimiento,
+            //     FechaActualizacion = DateTime.Now,
+            //     FechaCreacion = DateTime.Now
+            // };
+            // await _personaService.CreateAsync(persona);
+
+            // return CreatedAtAction(nameof(GetPersonas), new
+            // {
+            //     id = persona.Id
+            // }, persona);
+            return await _personaService.GetPersonaAsyncId(2);
         }
 
         // DELETE: api/Persona/5
@@ -117,64 +120,6 @@ namespace Bicode.Controllers
             await _personaService.RemoveAsync(persona);
 
             return NoContent();
-        }
-
-        [HttpGet("test")]
-        public async Task<ActionResult<List<PersonaSelectDto>>> GetSql()
-        {
-            List<PersonaSelectDto> value = await (
-                                                from p in _context.Personas
-                                                join g in _context.Generos
-                                                on p.IdGenero equals g.Id
-                                                select new PersonaSelectDto
-                                                {
-                                                    Nombre = p.Nombre,
-                                                    Apellido = p.Apellido,
-                                                    NumeroDocumento = p.NumeroDocumento,
-                                                    Genero = g.Nombre
-                                                }).ToListAsync();
-            return value;
-        }
-        [HttpGet("test2")]
-        public async Task<ActionResult<List<PersonaSelectDto>>> GetSqlClasificacion()
-        {
-            List<PersonaSelectDto> value = await (
-                                                from a in (from p in _context.Personas
-                                                           join g in _context.Generos on p.IdGenero equals g.Id
-                                                           join d in _context.Documentos on p.IdDocumento equals d.Id
-                                                           select new PersonaSelectDto
-                                                           {
-                                                               Id = p.Id,
-                                                               Nombre = p.Nombre,
-                                                               Apellido = p.Apellido,
-                                                               NumeroDocumento = p.NumeroDocumento,
-                                                               TipoDeDocumento = d.Abreviatura,
-                                                               Genero = g.Nombre,
-                                                               FechaNacimiento = p.FechaNacimiento,
-                                                               FechaCreacion = p.FechaCreacion,
-                                                               FechaActualizacion = p.FechaActualizacion,
-                                                               Edad = DateTime.Now.Year - p.FechaNacimiento.Year
-                                                           })
-                                                select new PersonaSelectDto
-                                                {
-                                                    Id = a.Id,
-                                                    Nombre = a.Nombre,
-                                                    Apellido = a.Apellido,
-                                                    NumeroDocumento = a.NumeroDocumento,
-                                                    TipoDeDocumento = a.TipoDeDocumento,
-                                                    Genero = a.Nombre,
-                                                    FechaNacimiento = a.FechaNacimiento,
-                                                    FechaCreacion = a.FechaCreacion,
-                                                    FechaActualizacion = a.FechaActualizacion,
-                                                    Edad = a.Edad,
-                                                    Clasificacion = (
-                                                    a.Edad <= 14 ? "Niño" :
-                                                    a.Edad >= 15 && a.Edad <= 20 ? "Adolecente" :
-                                                    a.Edad >= 21 && a.Edad <= 60 ? "Mayor de Edad" :
-                                                    "Tercera Edad"
-                                                    )
-                                                }).ToListAsync();
-            return value;
         }
     }
 }

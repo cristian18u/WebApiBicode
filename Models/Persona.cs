@@ -11,7 +11,7 @@ namespace Bicode.Models
         public string? Nombre { get; set; }
         public string? Apellido { get; set; }
         public long? NumeroDocumento { get; set; }
-        public DateTime FechaNacimiento { get; set; }
+        public DateTime? FechaNacimiento { get; set; }
         public DateTime? FechaCreacion { get; set; }
         public DateTime? FechaActualizacion { get; set; }
 

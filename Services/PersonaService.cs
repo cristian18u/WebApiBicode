@@ -19,18 +19,19 @@ namespace Bicode.Services
             return await (from a in (from p in _context.Personas
                                      join g in _context.Generos on p.IdGenero equals g.Id
                                      join d in _context.Documentos on p.IdDocumento equals d.Id
+                                     let EdadYear = DateTime.Now.Year - ((DateTime)p.FechaNacimiento!).Year
                                      select new PersonaSelectDto
                                      {
                                          Id = p.Id,
-                                         Nombre = p.Nombre,
-                                         Apellido = p.Apellido,
-                                         NumeroDocumento = p.NumeroDocumento,
-                                         TipoDeDocumento = d.Abreviatura,
-                                         Genero = g.Nombre,
-                                         FechaNacimiento = p.FechaNacimiento,
-                                         FechaCreacion = p.FechaCreacion,
-                                         FechaActualizacion = p.FechaActualizacion,
-                                         Edad = DateTime.Now.Year - p.FechaNacimiento.Year
+                                         Nombre = p.Nombre!,
+                                         Apellido = p.Apellido!,
+                                         NumeroDocumento = (long)p.NumeroDocumento!,
+                                         TipoDeDocumento = d.Abreviatura!,
+                                         Genero = g.Nombre!,
+                                         FechaNacimiento = (DateTime)p.FechaNacimiento!,
+                                         FechaCreacion = (DateTime)p.FechaCreacion!,
+                                         FechaActualizacion = (DateTime)p.FechaActualizacion!,
+                                         Edad = DateTime.Now.DayOfYear < ((DateTime)p.FechaNacimiento).DayOfYear ? EdadYear - 1 : EdadYear
                                      })
                           select new PersonaSelectDto
                           {
@@ -61,18 +62,19 @@ namespace Bicode.Services
                                                            where id == p.Id
                                                            join g in _context.Generos on p.IdGenero equals g.Id
                                                            join d in _context.Documentos on p.IdDocumento equals d.Id
+                                                           let EdadYear = DateTime.Now.Year - ((DateTime)p.FechaNacimiento!).Year
                                                            select new PersonaSelectDto
                                                            {
                                                                Id = p.Id,
-                                                               Nombre = p.Nombre,
-                                                               Apellido = p.Apellido,
-                                                               NumeroDocumento = p.NumeroDocumento,
-                                                               TipoDeDocumento = d.Abreviatura,
-                                                               Genero = g.Nombre,
-                                                               FechaNacimiento = p.FechaNacimiento,
-                                                               FechaCreacion = p.FechaCreacion,
-                                                               FechaActualizacion = p.FechaActualizacion,
-                                                               Edad = DateTime.Now.Year - p.FechaNacimiento.Year
+                                                               Nombre = p.Nombre!,
+                                                               Apellido = p.Apellido!,
+                                                               NumeroDocumento = (long)p.NumeroDocumento!,
+                                                               TipoDeDocumento = d.Abreviatura!,
+                                                               Genero = g.Nombre!,
+                                                               FechaNacimiento = (DateTime)p.FechaNacimiento!,
+                                                               FechaCreacion = (DateTime)p.FechaCreacion!,
+                                                               FechaActualizacion = (DateTime)p.FechaActualizacion!,
+                                                               Edad = DateTime.Now.DayOfYear < ((DateTime)p.FechaNacimiento).DayOfYear ? EdadYear - 1 : EdadYear
                                                            })
                                                 select new PersonaSelectDto
                                                 {
@@ -107,6 +109,7 @@ namespace Bicode.Services
             if (personaUpdateDto.Nombre != null) personaDb.Nombre = personaUpdateDto.Nombre;
             if (personaUpdateDto.Apellido != null) personaDb.Apellido = personaUpdateDto.Apellido;
             if (personaUpdateDto.NumeroDocumento != null) personaDb.NumeroDocumento = personaUpdateDto.NumeroDocumento;
+            if (personaUpdateDto.FechaNacimiento != null) personaDb.FechaNacimiento = personaUpdateDto.FechaNacimiento;
             personaDb.FechaActualizacion = DateTime.Now;
             await _context.SaveChangesAsync();
         }
