@@ -57,10 +57,8 @@ namespace Bicode.Services
         public async Task<PersonaSelectDto?> GetAsyncId(int id)
         {
             if (_context.Personas == null) return null;
-            if (await GetPersonaAsyncId(id) is null) return null;
             return await (
                                                 from a in (from p in _context.Personas
-                                                           where id == p.Id
                                                            join g in _context.Generos on p.IdGenero equals g.Id
                                                            join d in _context.Documentos on p.IdDocumento equals d.Id
                                                            let EdadYear = DateTime.Now.Year - ((DateTime)p.FechaNacimiento!).Year
@@ -77,6 +75,7 @@ namespace Bicode.Services
                                                                FechaActualizacion = (DateTime)p.FechaActualizacion!,
                                                                Edad = DateTime.Now.DayOfYear < ((DateTime)p.FechaNacimiento).DayOfYear ? EdadYear - 1 : EdadYear
                                                            })
+                                                where a.Id == id
                                                 select new PersonaSelectDto
                                                 {
                                                     Id = a.Id,
@@ -95,7 +94,7 @@ namespace Bicode.Services
                                                     a.Edad >= 21 && a.Edad <= 60 ? "Mayor de Edad" :
                                                     "Tercera Edad"
                                                     )
-                                                }).FirstAsync();
+                                                }).FirstOrDefaultAsync();
         }
         public async Task CreateAsync(Persona newPersona)
         {
