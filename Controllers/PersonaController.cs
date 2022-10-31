@@ -31,9 +31,19 @@ namespace Bicode.Controllers
 
             if (personas == null)
             {
-                return NotFound();
+                return NotFound(new
+                {
+                    Result = "{}",
+                    message = "No hay elementos en la base de dados",
+                    State = false
+                });
             }
-            return personas;
+            return Ok(new
+            {
+                Result = personas,
+                message = "Successfully",
+                State = true
+            });
         }
 
         // GET: api/Persona/5
@@ -44,9 +54,19 @@ namespace Bicode.Controllers
 
             if (persona == null)
             {
-                return NotFound();
+                return NotFound(new
+                {
+                    Result = "{}",
+                    message = $"El Id: {id} no se encuentra en la base de datos",
+                    State = false
+                });
             }
-            return persona;
+            return Ok(new
+            {
+                Result = persona,
+                message = "Successfully",
+                State = true
+            });
         }
         // PUT: api/Persona/5
         [HttpPut("{id}")]
@@ -55,14 +75,24 @@ namespace Bicode.Controllers
 
             if (id != personaUpdateDto.Id)
             {
-                return BadRequest();
+                return BadRequest(new
+                {
+                    Result = "{}",
+                    message = $"El Id: {id} no coincide con el Id enviado por body",
+                    State = false
+                });
             }
 
             var personaDb = await _personaService.GetPersonaAsyncId(id);
 
             if (personaDb == null)
             {
-                return NotFound();
+                return NotFound(new
+                {
+                    Result = "{}",
+                    message = $"El Id: {id} no se encuentra en la base de datos",
+                    State = false
+                });
             }
 
             try
@@ -74,37 +104,47 @@ namespace Bicode.Controllers
                 throw;
             }
 
-            return CreatedAtAction(nameof(GetPersonas), new
+            return CreatedAtAction(nameof(GetPersonas),
+            new
             {
                 id = personaDb.Id
-            }, personaDb);
+            },
+            new
+            {
+                Result = personaDb,
+                message = "Successfully",
+                State = true
+            });
         }
 
         // POST: api/Persona
         [HttpPost]
         public async Task<ActionResult<Persona>> PostPersona(PersonaDto personaDto)
         {
-            //falta manejo de excepciones
-            //falta try catch
+            var persona = new Persona
+            {
+                IdDocumento = personaDto.IdDocumento,
+                IdGenero = personaDto.IdGenero,
+                Nombre = personaDto.Nombre,
+                Apellido = personaDto.Apellido,
+                NumeroDocumento = personaDto.NumeroDocumento,
+                FechaNacimiento = personaDto.FechaNacimiento,
+                FechaActualizacion = DateTime.Now,
+                FechaCreacion = DateTime.Now
+            };
+            await _personaService.CreateAsync(persona);
 
-            // var persona = new Persona
-            // {
-            //     IdDocumento = personaDto.IdDocumento,
-            //     IdGenero = personaDto.IdGenero,
-            //     Nombre = personaDto.Nombre,
-            //     Apellido = personaDto.Apellido,
-            //     NumeroDocumento = personaDto.NumeroDocumento,
-            //     FechaNacimiento = personaDto.FechaNacimiento,
-            //     FechaActualizacion = DateTime.Now,
-            //     FechaCreacion = DateTime.Now
-            // };
-            // await _personaService.CreateAsync(persona);
-
-            // return CreatedAtAction(nameof(GetPersonas), new
-            // {
-            //     id = persona.Id
-            // }, persona);
-            return await _personaService.GetPersonaAsyncId(2);
+            return CreatedAtAction(nameof(GetPersonas),
+            new
+            {
+                id = persona.Id
+            },
+            new
+            {
+                Result = persona,
+                message = "Successfully",
+                State = true
+            });
         }
 
         // DELETE: api/Persona/5
@@ -115,11 +155,21 @@ namespace Bicode.Controllers
 
             if (persona == null)
             {
-                return NotFound();
+                return NotFound(new
+                {
+                    Result = "{}",
+                    message = $"El Id: {id} no se encuentra en la base de datos",
+                    State = false
+                });
             }
             await _personaService.RemoveAsync(persona);
 
-            return NoContent();
+            return Ok(new
+            {
+                Result = "{}",
+                message = $"La persona con Id: {id} eliminada exitosamente de la base de datos",
+                State = false
+            });
         }
     }
 }

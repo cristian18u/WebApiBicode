@@ -57,6 +57,7 @@ namespace Bicode.Services
         public async Task<PersonaSelectDto?> GetAsyncId(int id)
         {
             if (_context.Personas == null) return null;
+            if (await GetPersonaAsyncId(id) is null) return null;
             return await (
                                                 from a in (from p in _context.Personas
                                                            where id == p.Id
