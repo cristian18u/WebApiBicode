@@ -13,6 +13,7 @@ namespace Bicode.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("2.0")]
     public class PersonaController : ControllerBase
     {
         private readonly PersonaService _personaService;
@@ -48,6 +49,7 @@ namespace Bicode.Controllers
 
         // GET: api/Persona/5
         [HttpGet("{id}")]
+        [ApiVersion("1.0")]
         public async Task<ActionResult<PersonaSelectDto>> GetPersonas(int id)
         {
             var persona = await _personaService.GetAsyncId(id);
