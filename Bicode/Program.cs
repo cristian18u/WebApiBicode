@@ -11,7 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddScoped<PersonaService>();
-builder.Services.AddDbContext<BI_TESTGENContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Connection")));
+builder.Services.AddDbContext<BI_TESTGENContext>(options => options.UseSqlServer(
+    builder.Configuration.GetConnectionString("Connection")
+    ));
 builder.Services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
