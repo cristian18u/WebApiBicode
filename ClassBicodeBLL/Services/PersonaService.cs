@@ -16,85 +16,13 @@ namespace ClassBicodeBLL.Services
         public async Task<List<PersonaSelectDto>?> GetAsync()
         {
             if (_context.Personas == null) return null;
-            return await (from a in (from p in _context.Personas
-                                     join g in _context.Generos on p.IdGenero equals g.Id
-                                     join d in _context.Documentos on p.IdDocumento equals d.Id
-                                     let EdadYear = DateTime.Now.Year - ((DateTime)p.FechaNacimiento!).Year
-                                     select new PersonaSelectDto
-                                     {
-                                         Id = p.Id,
-                                         Nombre = p.Nombre,
-                                         Apellido = p.Apellido,
-                                         NumeroDocumento = (long)p.NumeroDocumento!,
-                                         TipoDeDocumento = d.Abreviatura,
-                                         Genero = g.Nombre,
-                                         FechaNacimiento = (DateTime)p.FechaNacimiento!,
-                                         FechaCreacion = (DateTime)p.FechaCreacion!,
-                                         FechaActualizacion = (DateTime)p.FechaActualizacion!,
-                                         Edad = DateTime.Now.DayOfYear < ((DateTime)p.FechaNacimiento).DayOfYear ? EdadYear - 1 : EdadYear
-                                     })
-                          select new PersonaSelectDto
-                          {
-                              Id = a.Id,
-                              Nombre = a.Nombre,
-                              Apellido = a.Apellido,
-                              NumeroDocumento = a.NumeroDocumento,
-                              TipoDeDocumento = a.TipoDeDocumento,
-                              Genero = a.Genero,
-                              FechaNacimiento = a.FechaNacimiento,
-                              FechaCreacion = a.FechaCreacion,
-                              FechaActualizacion = a.FechaActualizacion,
-                              Edad = a.Edad,
-                              Clasificacion = (
-                              a.Edad <= 14 ? "Niño" :
-                              a.Edad >= 15 && a.Edad <= 20 ? "Adolecente" :
-                              a.Edad >= 21 && a.Edad <= 60 ? "Mayor de Edad" :
-                              "Tercera Edad"
-                              )
-                          }).ToListAsync(); ;
+            return await querySql().ToListAsync();
         }
 
         public async Task<PersonaSelectDto?> GetAsyncId(int id)
         {
             if (_context.Personas == null) return null;
-            return await (
-                                                from a in (from p in _context.Personas
-                                                           join g in _context.Generos on p.IdGenero equals g.Id
-                                                           join d in _context.Documentos on p.IdDocumento equals d.Id
-                                                           let EdadYear = DateTime.Now.Year - ((DateTime)p.FechaNacimiento!).Year
-                                                           select new PersonaSelectDto
-                                                           {
-                                                               Id = p.Id,
-                                                               Nombre = p.Nombre,
-                                                               Apellido = p.Apellido,
-                                                               NumeroDocumento = (long)p.NumeroDocumento!,
-                                                               TipoDeDocumento = d.Abreviatura,
-                                                               Genero = g.Nombre,
-                                                               FechaNacimiento = (DateTime)p.FechaNacimiento!,
-                                                               FechaCreacion = (DateTime)p.FechaCreacion!,
-                                                               FechaActualizacion = (DateTime)p.FechaActualizacion!,
-                                                               Edad = DateTime.Now.DayOfYear < ((DateTime)p.FechaNacimiento).DayOfYear ? EdadYear - 1 : EdadYear
-                                                           })
-                                                where a.Id == id
-                                                select new PersonaSelectDto
-                                                {
-                                                    Id = a.Id,
-                                                    Nombre = a.Nombre,
-                                                    Apellido = a.Apellido,
-                                                    NumeroDocumento = a.NumeroDocumento,
-                                                    TipoDeDocumento = a.TipoDeDocumento,
-                                                    Genero = a.Genero,
-                                                    FechaNacimiento = a.FechaNacimiento,
-                                                    FechaCreacion = a.FechaCreacion,
-                                                    FechaActualizacion = a.FechaActualizacion,
-                                                    Edad = a.Edad,
-                                                    Clasificacion = (
-                                                    a.Edad <= 14 ? "Niño" :
-                                                    a.Edad >= 15 && a.Edad <= 20 ? "Adolecente" :
-                                                    a.Edad >= 21 && a.Edad <= 60 ? "Mayor de Edad" :
-                                                    "Tercera Edad"
-                                                    )
-                                                }).FirstOrDefaultAsync();
+            return await querySql().Where(x => x.Id == id).FirstOrDefaultAsync();
         }
         public async Task CreateAsync(Persona newPersona)
         {
@@ -123,6 +51,45 @@ namespace ClassBicodeBLL.Services
         public async Task<Persona?> GetPersonaAsyncId(int id)
         {
             return await _context.Personas.FindAsync(id);
+        }
+        public IQueryable<PersonaSelectDto> querySql()
+        {
+            return (from a in (from p in _context.Personas
+                               join g in _context.Generos on p.IdGenero equals g.Id
+                               join d in _context.Documentos on p.IdDocumento equals d.Id
+                               let EdadYear = DateTime.Now.Year - ((DateTime)p.FechaNacimiento!).Year
+                               select new PersonaSelectDto
+                               {
+                                   Id = p.Id,
+                                   Nombre = p.Nombre,
+                                   Apellido = p.Apellido,
+                                   NumeroDocumento = (long)p.NumeroDocumento!,
+                                   TipoDeDocumento = d.Abreviatura,
+                                   Genero = g.Nombre,
+                                   FechaNacimiento = (DateTime)p.FechaNacimiento!,
+                                   FechaCreacion = (DateTime)p.FechaCreacion!,
+                                   FechaActualizacion = (DateTime)p.FechaActualizacion!,
+                                   Edad = DateTime.Now.DayOfYear < ((DateTime)p.FechaNacimiento).DayOfYear ? EdadYear - 1 : EdadYear
+                               })
+                    select new PersonaSelectDto
+                    {
+                        Id = a.Id,
+                        Nombre = a.Nombre,
+                        Apellido = a.Apellido,
+                        NumeroDocumento = a.NumeroDocumento,
+                        TipoDeDocumento = a.TipoDeDocumento,
+                        Genero = a.Genero,
+                        FechaNacimiento = a.FechaNacimiento,
+                        FechaCreacion = a.FechaCreacion,
+                        FechaActualizacion = a.FechaActualizacion,
+                        Edad = a.Edad,
+                        Clasificacion = (
+                        a.Edad <= 14 ? "Niño" :
+                        a.Edad >= 15 && a.Edad <= 20 ? "Adolecente" :
+                        a.Edad >= 21 && a.Edad <= 60 ? "Mayor de Edad" :
+                        "Tercera Edad"
+                        )
+                    });
         }
     }
 

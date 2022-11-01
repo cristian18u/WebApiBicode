@@ -12,12 +12,10 @@ namespace Bicode.Controllers;
 public class PersonaController : ControllerBase
 {
     private readonly PersonaService _personaService;
-    private readonly BI_TESTGENContext _context;
 
     public PersonaController(PersonaService personaService, BI_TESTGENContext context)
     {
         _personaService = personaService;
-        _context = context;
     }
     // GET: api/Persona
     [HttpGet]
