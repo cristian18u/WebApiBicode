@@ -4,7 +4,7 @@ using ClassBicodeDAL.Models;
 using ClassBicodeBLL.Services;
 using ClassBicodeBLL.Dto;
 
-namespace Bicode.Controllers;
+namespace Bicode.V2.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -35,14 +35,13 @@ public class PersonaController : ControllerBase
         return Ok(new
         {
             Result = personas,
-            message = "Successfully",
+            message = "Successfully, desde la version 2.0",
             State = true
         });
     }
 
     // GET: api/Persona/5
     [HttpGet("{id}")]
-    [ApiVersion("1.0")]
     public async Task<ActionResult<PersonaSelectDto>> GetPersonas(int id)
     {
         var persona = await _personaService.GetAsyncId(id);
@@ -59,7 +58,7 @@ public class PersonaController : ControllerBase
         return Ok(new
         {
             Result = persona,
-            message = "Successfully",
+            message = "Successfully, Desde la version 2.0",
             State = true
         });
     }
