@@ -3,10 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-ClassBicodeBLL/bin/
-ClassBicodeBLL/obj/
-ClassBicodeDAL/bin/
-ClassBicodeDAL/obj/
+/ClassBicodeBLL/bin/*
+/ClassBicodeBLL/obj/*
+ClassBicodeDAL/bin/*
+ClassBicodeDAL/obj/*
+# ClassBicodeBLL/*
 # User-specific files
 *.rsuser
 *.suo
