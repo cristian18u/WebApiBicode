@@ -1,5 +1,3 @@
-// using Bicode.Models;
-// using Bicode.Services;
 using ClassBicodeBLL.Services;
 using ClassBicodeDAL.Models;
 using Microsoft.AspNetCore.Mvc;
