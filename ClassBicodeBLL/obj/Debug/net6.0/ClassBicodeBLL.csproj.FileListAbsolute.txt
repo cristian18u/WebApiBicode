@@ -1,0 +1,15 @@
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\bin\Debug\net6.0\ClassBicodeBLL.deps.json
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\bin\Debug\net6.0\ClassBicodeBLL.dll
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\bin\Debug\net6.0\ClassBicodeBLL.pdb
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\ClassBicodeBLL.csproj.AssemblyReference.cache
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\ClassBicodeBLL.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\ClassBicodeBLL.AssemblyInfoInputs.cache
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\ClassBicodeBLL.AssemblyInfo.cs
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\ClassBicodeBLL.csproj.CoreCompileInputs.cache
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\ClassBicodeBLL.dll
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\refint\ClassBicodeBLL.dll
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\ClassBicodeBLL.pdb
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\ref\ClassBicodeBLL.dll
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\bin\Debug\net6.0\ClassBicodeDAL.dll
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\bin\Debug\net6.0\ClassBicodeDAL.pdb
+C:\Users\crist\Documents\NetCore\Bicode\ClassBicodeBLL\obj\Debug\net6.0\ClassBicodeBLL.csproj.CopyComplete
