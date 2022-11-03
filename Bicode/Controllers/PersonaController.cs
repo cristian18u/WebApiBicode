@@ -3,12 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using ClassBicodeDAL.Models;
 using ClassBicodeBLL.Services;
 using ClassBicodeBLL.Dto;
+using Bicode.Models;
 
-namespace Bicode.V2.Controllers;
+namespace Bicode.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[ApiVersion("2.0")]
+[ApiVersion("1.0")]
 public class PersonaController : ControllerBase
 {
     private readonly PersonaService _personaService;
@@ -21,21 +22,20 @@ public class PersonaController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<PersonaSelectDto>>> GetPersonas()
     {
-        var personas = await _personaService.GetAsync();
+        List<PersonaSelectDto>? personas = await _personaService.GetAsync();
 
         if (personas == null)
         {
-            return NotFound(new
+            return NotFound(new ResponsePersonaDto
             {
-                Result = "{}",
-                message = "No hay elementos en la base de dados",
+                Message = "No hay elementos en la base de dados",
                 State = false
             });
         }
         return Ok(new
         {
             Result = personas,
-            message = "Successfully, desde la version 2.0",
+            Message = "Successfully nueva publicacion",
             State = true
         });
     }
@@ -44,21 +44,20 @@ public class PersonaController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<PersonaSelectDto>> GetPersonas(int id)
     {
-        var persona = await _personaService.GetAsyncId(id);
+        PersonaSelectDto? persona = await _personaService.GetAsyncId(id);
 
         if (persona == null)
         {
-            return NotFound(new
+            return NotFound(new ResponsePersonaDto
             {
-                Result = "{}",
-                message = $"El Id: {id} no se encuentra en la base de datos",
+                Message = $"El Id: {id} no se encuentra en la base de datos",
                 State = false
             });
         }
         return Ok(new
         {
             Result = persona,
-            message = "Successfully, Desde la version 2.0",
+            Message = "Successfully, nueva publicacion",
             State = true
         });
     }
@@ -69,10 +68,9 @@ public class PersonaController : ControllerBase
 
         if (id != personaUpdateDto.Id)
         {
-            return BadRequest(new
+            return BadRequest(new ResponsePersonaDto
             {
-                Result = "{}",
-                message = $"El Id: {id} no coincide con el Id enviado por body",
+                Message = $"El Id: {id} no coincide con el Id enviado por body",
                 State = false
             });
         }
@@ -81,10 +79,9 @@ public class PersonaController : ControllerBase
 
         if (personaDb == null)
         {
-            return NotFound(new
+            return NotFound(new ResponsePersonaDto
             {
-                Result = "{}",
-                message = $"El Id: {id} no se encuentra en la base de datos",
+                Message = $"El Id: {id} no se encuentra en la base de datos",
                 State = false
             });
         }
@@ -106,7 +103,7 @@ public class PersonaController : ControllerBase
         new
         {
             Result = personaDb,
-            message = "Successfully",
+            Message = "Successfully",
             State = true
         });
     }
@@ -136,7 +133,7 @@ public class PersonaController : ControllerBase
         new
         {
             Result = persona,
-            message = "Successfully",
+            Message = "Successfully",
             State = true
         });
     }
@@ -145,24 +142,27 @@ public class PersonaController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePersona(int id)
     {
-        var persona = await _personaService.GetPersonaAsyncId(id);
+        Persona? persona = await _personaService.GetPersonaAsyncId(id);
 
         if (persona == null)
         {
-            return NotFound(new
+            return NotFound(new ResponsePersonaDto
             {
-                Result = "{}",
-                message = $"El Id: {id} no se encuentra en la base de datos",
+                Message = $"El Id: {id} no se encuentra en la base de datos",
                 State = false
             });
         }
         await _personaService.RemoveAsync(persona);
 
-        return Ok(new
+        return Ok(new ResponsePersonaDto
         {
-            Result = "{}",
-            message = $"La persona con Id: {id} eliminada exitosamente de la base de datos",
+            Message = $"La persona con Id: {id} eliminada exitosamente de la base de datos",
             State = false
         });
+    }
+    [HttpGet("test")]
+    public IActionResult TestException()
+    {
+        throw new Exception("Esta es una Exception");
     }
 }

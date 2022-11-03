@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "Bicode"
+		},
+		{
+			"path": "ClassBicodeBLL"
+		},
+		{
+			"path": "ClassBicodeDAL"
+		}
+	],
+	"settings": {}
+}

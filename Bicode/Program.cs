@@ -1,3 +1,5 @@
+using Bicode.Filters;
+using Bicode.Middleware;
 using ClassBicodeBLL.Services;
 using ClassBicodeDAL.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +21,20 @@ builder.Services.AddApiVersioning(options =>
                 options.ReportApiVersions = true;
                 options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
             });
-builder.Services.AddControllers();
+
+builder.Services.AddControllers(options =>
+{
+    //filter ViewModel invalid
+    options.Filters.Add<ResultManipulationFilter>();
+
+    //Filter para el manejo de Exception
+    options.Filters.Add<ExceptionFilter>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -33,10 +42,14 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
+//Middelware Para las paginas no existentes
+app.UseMiddleware<MiddlewarePageNoFound>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();
