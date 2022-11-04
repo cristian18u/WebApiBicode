@@ -10,9 +10,15 @@ public class ResultManipulationFilter : IResultFilter
     {
         if (context.ModelState.IsValid == false)
         {
-            context.Result = new NotFoundObjectResult(new ResponsePersonaDto
+            List<string> message = new List<string>();
+            foreach (var a in context.ModelState.ToList())
             {
-                Message = "El View Model is invalid, Faltan Propiedades Requeridas",
+                message.Add(a.Value!.Errors[0].ErrorMessage);
+            }
+            context.Result = new BadRequestObjectResult(new
+            ResponseDataAnnotationsCustom
+            {
+                Message = message,
                 State = false
             });
         }

@@ -74,6 +74,14 @@ public class PersonaController : ControllerBase
                 State = false
             });
         }
+        if (personaUpdateDto.IdDocumento != null && personaUpdateDto.NumeroDocumento == null)
+        {
+            return BadRequest(new ResponsePersonaDto
+            {
+                Message = "Si desea modificar el tipo de documento debe ingresar el numero de documento tambien",
+                State = false
+            });
+        }
 
         var personaDb = await _personaService.GetPersonaAsyncId(id);
 
@@ -86,26 +94,34 @@ public class PersonaController : ControllerBase
             });
         }
 
-        try
+        Boolean savePerson = await _personaService.UpdateAsync(personaUpdateDto, personaDb);
+
+        if (savePerson is true)
         {
-            await _personaService.UpdateAsync(personaUpdateDto, personaDb);
+            return CreatedAtAction(nameof(GetPersonas),
+            new
+            {
+                id = personaDb.Id
+            },
+            new
+            {
+                Result = personaDb,
+                Message = "Successfully",
+                State = true
+            });
         }
-        catch (DbUpdateConcurrencyException)
+        else
         {
-            throw;
+            String? documentType = await _personaService.TipoDeDocumento(personaDb.IdDocumento);
+            if (personaUpdateDto.IdDocumento != null)
+                documentType = await _personaService.TipoDeDocumento(personaUpdateDto.IdDocumento);
+            return NotFound(new ResponsePersonaDto
+            {
+                Message = $"La persona con numero de documento {personaUpdateDto.NumeroDocumento} {documentType} ya se encuentra registrada en la base de datos",
+                State = false
+            });
         }
 
-        return CreatedAtAction(nameof(GetPersonas),
-        new
-        {
-            id = personaDb.Id
-        },
-        new
-        {
-            Result = personaDb,
-            Message = "Successfully",
-            State = true
-        });
     }
 
     // POST: api/Persona
@@ -123,19 +139,30 @@ public class PersonaController : ControllerBase
             FechaActualizacion = DateTime.Now,
             FechaCreacion = DateTime.Now
         };
-        await _personaService.CreateAsync(persona);
-
-        return CreatedAtAction(nameof(GetPersonas),
-        new
+        Boolean savePerson = await _personaService.CreateAsync(persona);
+        if (savePerson is true)
         {
-            id = persona.Id
-        },
-        new
+            return CreatedAtAction(nameof(GetPersonas),
+            new
+            {
+                id = persona.Id
+            },
+            new
+            {
+                Result = persona,
+                Message = "Successfully",
+                State = true
+            });
+        }
+        else
         {
-            Result = persona,
-            Message = "Successfully",
-            State = true
-        });
+            string? documentType = await _personaService.TipoDeDocumento(personaDto.IdDocumento);
+            return NotFound(new ResponsePersonaDto
+            {
+                Message = $"La persona con numero de documento {personaDto.NumeroDocumento} {documentType} ya se encuentra registrada en la base de datos",
+                State = false
+            });
+        }
     }
 
     // DELETE: api/Persona/5

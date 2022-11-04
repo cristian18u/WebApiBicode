@@ -24,22 +24,29 @@ namespace ClassBicodeBLL.Services
             if (_context.Personas == null) return null;
             return await querySql().Where(x => x.Id == id).FirstOrDefaultAsync();
         }
-        public async Task CreateAsync(Persona newPersona)
+        public async Task<Boolean> CreateAsync(Persona newPersona)
         {
-            _context.Personas.Add(newPersona);
-            await _context.SaveChangesAsync();
+            if (await ValidationPersonExits(newPersona) == false)
+            {
+                _context.Personas.Add(newPersona);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            else return false;
         }
 
-        public async Task UpdateAsync(PersonaUpdateDto personaUpdateDto, Persona personaDb)
+        public async Task<Boolean> UpdateAsync(PersonaUpdateDto personaUpdateDto, Persona personaDb)
         {
-            if (personaUpdateDto.IdDocumento != null) personaDb.IdDocumento = personaUpdateDto.IdDocumento;
-            if (personaUpdateDto.IdGenero != null) personaDb.IdGenero = personaUpdateDto.IdGenero;
-            if (personaUpdateDto.Nombre != null) personaDb.Nombre = personaUpdateDto.Nombre;
-            if (personaUpdateDto.Apellido != null) personaDb.Apellido = personaUpdateDto.Apellido;
-            if (personaUpdateDto.NumeroDocumento != null) personaDb.NumeroDocumento = personaUpdateDto.NumeroDocumento;
-            if (personaUpdateDto.FechaNacimiento != null) personaDb.FechaNacimiento = personaUpdateDto.FechaNacimiento;
-            personaDb.FechaActualizacion = DateTime.Now;
-            await _context.SaveChangesAsync();
+            if (personaUpdateDto.NumeroDocumento != null)
+            {
+                Persona newPersona = new Persona();
+                newPersona.NumeroDocumento = personaUpdateDto.NumeroDocumento;
+                if (personaUpdateDto.IdDocumento != null) newPersona.IdDocumento = personaUpdateDto.IdDocumento;
+                else newPersona.IdDocumento = personaDb.IdDocumento;
+                if (await ValidationPersonExits(newPersona) == false) return await SavePersonInDb(personaUpdateDto, personaDb);
+                else return false;
+            }
+            else return await SavePersonInDb(personaUpdateDto, personaDb);
         }
 
         public async Task RemoveAsync(Persona persona)
@@ -51,6 +58,29 @@ namespace ClassBicodeBLL.Services
         public async Task<Persona?> GetPersonaAsyncId(int id)
         {
             return await _context.Personas.FindAsync(id);
+        }
+
+        public async Task<Boolean> ValidationPersonExits(Persona newPersona)
+        {
+            Persona? personaDb = await _context.Personas.Where(x => x.NumeroDocumento == newPersona.NumeroDocumento && x.IdDocumento == newPersona.IdDocumento).FirstOrDefaultAsync();
+            if (personaDb == null) return false;
+            else return true;
+        }
+        public async Task<String?> TipoDeDocumento(int? IdDocumento)
+        {
+            return await (from d in _context.Documentos where d.Id == IdDocumento select d.Abreviatura).FirstOrDefaultAsync();
+        }
+        public async Task<Boolean> SavePersonInDb(PersonaUpdateDto personaUpdateDto, Persona personaDb)
+        {
+            if (personaUpdateDto.IdDocumento != null) personaDb.IdDocumento = personaUpdateDto.IdDocumento;
+            if (personaUpdateDto.IdGenero != null) personaDb.IdGenero = personaUpdateDto.IdGenero;
+            if (personaUpdateDto.Nombre != null) personaDb.Nombre = personaUpdateDto.Nombre;
+            if (personaUpdateDto.Apellido != null) personaDb.Apellido = personaUpdateDto.Apellido;
+            if (personaUpdateDto.NumeroDocumento != null) personaDb.NumeroDocumento = personaUpdateDto.NumeroDocumento;
+            if (personaUpdateDto.FechaNacimiento != null) personaDb.FechaNacimiento = personaUpdateDto.FechaNacimiento;
+            personaDb.FechaActualizacion = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return true;
         }
         public IQueryable<PersonaSelectDto> querySql()
         {
